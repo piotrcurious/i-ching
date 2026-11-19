@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#111a18" />
+<title>Yijing — The Field of Change</title>
+<style>
+:root{
+  --ink:#111a18;--ink2:#17221f;--panel:#1a2723;--panel2:#202e29;--line:#34443d;
+  --paper:#e9dfc9;--muted:#9da99b;--soft:#c3cbbd;--gold:#c3a776;--ember:#da9366;
+  --moss:#86a291;--white:#f2eddf;--shadow:0 18px 55px rgba(0,0,0,.22);
+  --serif:Georgia,"Times New Roman",serif;--sans:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html{background:var(--ink);scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(ellipse at 75% -15%,#28382f 0%,transparent 43%),var(--ink);color:var(--paper);font-family:var(--sans);font-size:14px;line-height:1.5;min-height:100vh}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.app{max-width:1480px;margin:auto;padding:28px clamp(16px,3vw,42px) 42px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;border-bottom:1px solid rgba(195,167,118,.2);padding-bottom:20px}
+.brand{display:flex;align-items:center;gap:13px;min-width:0}
+.brand-mark{width:38px;height:38px;display:grid;place-items:center;border:1px solid rgba(195,167,118,.6);border-radius:50%;color:var(--gold);font:24px var(--serif);box-shadow:inset 0 0 22px rgba(195,167,118,.08)}
+.brand-kicker,.eyebrow,.micro{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.brand-name{font:19px var(--serif);letter-spacing:.04em;color:var(--white);white-space:nowrap}
+.top-actions{display:flex;align-items:center;gap:8px}
+.ghost-btn,.tab,.action-btn,.method-option{border:1px solid var(--line);background:transparent;color:var(--soft);border-radius:8px;padding:9px 12px;transition:.18s ease}
+.ghost-btn:hover,.tab:hover,.action-btn:hover,.method-option:hover{border-color:var(--gold);color:var(--white);background:rgba(195,167,118,.07)}
+.hero{display:flex;justify-content:space-between;align-items:end;gap:20px;padding:28px 0 21px}
+.hero h1{font:clamp(29px,4vw,43px)/1.05 var(--serif);font-weight:400;letter-spacing:-.025em;margin:6px 0 8px;color:var(--white)}
+.hero p{margin:0;color:var(--muted);max-width:660px;font-size:13px}
+.hero-note{max-width:190px;text-align:right;font:italic 13px/1.45 var(--serif);color:#bdad8b}
+.tabs{display:flex;gap:6px;padding:5px;border:1px solid rgba(195,167,118,.19);background:rgba(7,14,12,.35);border-radius:11px;width:max-content;max-width:100%;overflow:auto}
+.tab{border:0;padding:9px 16px;white-space:nowrap;color:#aab4a7}
+.tab.active{background:#35453c;color:var(--white);box-shadow:inset 0 0 0 1px rgba(195,167,118,.25)}
+.view{display:none;padding-top:20px}.view.active{display:block}
+.consult-layout{display:grid;grid-template-columns:minmax(285px,355px) minmax(0,1fr);gap:18px;align-items:start}
+.panel{background:linear-gradient(145deg,rgba(31,46,40,.97),rgba(22,33,29,.98));border:1px solid rgba(166,169,143,.16);border-radius:14px;box-shadow:var(--shadow)}
+.controls{padding:20px;position:relative;overflow:hidden}
+.controls:before{content:"";position:absolute;right:-65px;top:-92px;width:220px;height:220px;border:1px solid rgba(195,167,118,.09);border-radius:50%;box-shadow:0 0 0 19px rgba(195,167,118,.018),0 0 0 43px rgba(195,167,118,.015);pointer-events:none}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:13px;position:relative}
+.section-head h2,.section-head h3{margin:0;font:20px var(--serif);font-weight:400;color:var(--white)}
+.badge{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(195,167,118,.3);border-radius:100px;padding:4px 8px;white-space:nowrap}
+.field-label{display:block;margin:15px 0 7px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+textarea,.select-field,.search-field{display:block;width:100%;color:var(--paper);background:rgba(7,14,12,.38);border:1px solid #3a4a42;border-radius:9px;padding:11px 12px;outline:none;transition:border-color .18s}
+textarea{min-height:84px;resize:vertical;line-height:1.45}
+textarea:focus,.select-field:focus,.search-field:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(195,167,118,.08)}
+textarea::placeholder,.search-field::placeholder{color:#758278}
+select option{background:#1c2924;color:var(--paper)}
+.method-switch{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.method-option{padding:10px 8px;text-align:left;font-size:12px}
+.method-option strong{display:block;font-weight:550;color:var(--paper);margin-bottom:2px}
+.method-option small{display:block;color:var(--muted);font-size:10px}
+.method-option.active{border-color:rgba(195,167,118,.7);background:rgba(195,167,118,.1)}
+.method-note{color:var(--muted);font-size:11px;line-height:1.45;margin:8px 1px 0;min-height:32px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.action-btn{font-size:12px;padding:11px 10px}
+.action-btn.primary{background:var(--gold);border-color:var(--gold);color:#17201b;font-weight:650}
+.action-btn.primary:hover{background:#d3b988;color:#111a18}
+.action-btn:disabled{opacity:.4;cursor:not-allowed}
+.action-btn.wide{grid-column:1/-1}
+.line-log{margin-top:20px;border-top:1px solid rgba(195,167,118,.16);padding-top:16px}
+.line-log-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.line-log-head .micro{color:var(--muted)}
+.line-row{display:grid;grid-template-columns:34px 1fr 40px 66px;align-items:center;gap:7px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.045);font-size:11px}
+.line-no{color:#79877d;font-variant-numeric:tabular-nums}
+.line-symbol{height:10px;display:flex;gap:5px;align-items:center}
+.line-bar{height:5px;border-radius:2px;background:var(--soft);display:block}
+.line-bar.full{width:38px}.line-bar.half{width:16px}
+.line-symbol.changing .line-bar{background:var(--ember);box-shadow:0 0 9px rgba(218,147,102,.24)}
+.line-value{font-variant-numeric:tabular-nums;color:var(--soft);text-align:right}
+.line-state{font-size:10px;color:var(--muted);text-align:right}
+.line-state.change{color:var(--ember)}
+.manual-panel{display:none;margin-top:12px;padding:12px;border:1px solid rgba(195,167,118,.18);border-radius:9px;background:rgba(8,15,13,.28)}
+.manual-panel.open{display:block}
+.manual-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.manual-field label{display:block;font-size:10px;color:var(--muted);margin-bottom:4px}
+.manual-field select{width:100%;font-size:11px;padding:7px;background:#14201b;color:var(--paper);border:1px solid #435348;border-radius:6px}
+.manual-foot{font-size:10px;color:var(--muted);margin:9px 0 0}
+.visual-column{min-width:0;display:flex;flex-direction:column;gap:14px}
+.stage{position:relative;overflow:hidden;border:1px solid rgba(195,167,118,.22);border-radius:14px;background:radial-gradient(ellipse at center,#23342c 0%,#17231f 58%,#131d19 100%);min-height:360px;box-shadow:var(--shadow)}
+.stage:after{content:"";position:absolute;inset:12px;border:1px solid rgba(195,167,118,.08);border-radius:9px;pointer-events:none}
+.stage-top{position:absolute;top:18px;left:21px;right:21px;display:flex;justify-content:space-between;align-items:center;z-index:2;pointer-events:none}
+.stage-top .eyebrow{color:#a5ad9d}
+.stage-state{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#c3a776}
+#hexCanvas{position:absolute;inset:0;width:100%;height:360px;display:block}
+.stage-labels{position:absolute;left:0;right:0;bottom:18px;display:flex;justify-content:center;gap:clamp(25px,12vw,150px);z-index:2;pointer-events:none}
+.stage-label{min-width:90px;text-align:center}
+.stage-label strong{font:16px var(--serif);font-weight:400;color:var(--white);display:block}
+.stage-label span{font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:#9ba89a}
+.stage-label.secondary strong{color:#9eb5a6}
+.stage-placeholder{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;color:#8c998d;z-index:2;pointer-events:none}
+.stage-placeholder b{display:block;font:31px var(--serif);font-weight:400;color:#b9aa88;margin-bottom:4px}
+.stage-placeholder span{font-size:10px;letter-spacing:.16em;text-transform:uppercase}
+.result-strip{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.result-card{padding:16px 18px;min-width:0}
+.result-card .num{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--gold)}
+.result-card h3{margin:3px 0 2px;font:22px var(--serif);font-weight:400;color:var(--white)}
+.result-card .hanzi{font:27px var(--serif);color:#c6b58e;margin-left:6px}
+.result-card .pinyin{color:#9da99b;font-size:11px}
+.result-card p{margin:9px 0 0;color:#c0c9bc;font-size:12px;line-height:1.5}
+.result-card.secondary{border-color:rgba(134,162,145,.24)}
+.result-card.secondary h3{color:#d3e0d4}
+.interpretation{padding:19px 21px}
+.interpretation-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:11px}
+.interpretation h3{margin:0;font:20px var(--serif);font-weight:400;color:var(--white)}
+.interpretation-body{color:#c5cebf;font-size:13px;line-height:1.65}
+.interpretation-body p{margin:8px 0}
+.lens-label{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.moving-lines{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:13px}
+.moving-item{padding:10px 11px;border-radius:8px;background:rgba(8,15,13,.31);border:1px solid rgba(218,147,102,.19);font-size:11px;color:#c4cbbc}
+.moving-item strong{display:block;color:var(--ember);font-size:10px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
+.empty-copy{color:var(--muted);font-size:12px;line-height:1.6}
+.small-note{color:#8e9c90;font-size:10px;line-height:1.5;margin-top:12px}
+/* Library */
+.library-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:16px}
+.library-head h2,.reference-head h2{font:27px var(--serif);font-weight:400;color:var(--white);margin:0 0 5px}
+.library-head p,.reference-head p{color:var(--muted);margin:0;font-size:12px}
+.search-wrap{width:min(330px,100%)}
+.library-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.hex-card{background:linear-gradient(145deg,#1d2b25,#17221e);border:1px solid rgba(166,169,143,.16);border-radius:10px;padding:11px 12px;text-align:left;color:var(--paper);min-width:0;transition:.18s}
+.hex-card:hover,.hex-card.selected{border-color:rgba(195,167,118,.62);background:#26362e;transform:translateY(-1px)}
+.hex-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.hex-card .glyph{font:28px var(--serif);color:var(--gold)}
+.hex-card .n{font-size:10px;color:#829085;letter-spacing:.12em}
+.hex-card strong{display:block;font:15px var(--serif);font-weight:400;color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:4px}
+.hex-card small{display:block;color:var(--muted);font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px}
+.mini-lines{display:flex;flex-direction:column;gap:3px;width:53px;margin-top:6px}
+.mini-line{height:3px;background:#b9c5b5;border-radius:2px;position:relative}
+.mini-line.broken{background:transparent}
+.mini-line.broken:before,.mini-line.broken:after{content:"";position:absolute;top:0;height:3px;width:42%;background:#b9c5b5;border-radius:2px}
+.mini-line.broken:before{left:0}.mini-line.broken:after{right:0}
+.library-detail{display:none;margin-bottom:15px;padding:18px 20px;grid-template-columns:auto 1fr;gap:18px;align-items:center}
+.library-detail.open{display:grid}
+.detail-glyph{font:62px var(--serif);color:var(--gold);padding:0 10px}
+.detail-copy h3{font:24px var(--serif);font-weight:400;margin:0;color:var(--white)}
+.detail-copy .sub{font-size:11px;color:var(--muted);margin-top:2px}
+.detail-copy p{font-size:12px;color:#c4cdbf;margin:9px 0 0;max-width:850px}
+.detail-trigrams{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.trigram-chip{font-size:10px;color:#c7cfbf;background:rgba(134,162,145,.09);border:1px solid rgba(134,162,145,.18);padding:4px 8px;border-radius:100px}
+/* Trigrams / method */
+.reference-head{margin-bottom:20px}
+.trigram-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.trigram-card{padding:17px;min-height:173px}
+.trigram-card-head{display:flex;justify-content:space-between;align-items:center}
+.trigram-glyph{font:35px var(--serif);color:var(--gold)}
+.trigram-lines{width:70px;display:flex;flex-direction:column;gap:5px}
+.trigram-lines .mini-line{height:5px}.trigram-lines .mini-line.broken:before,.trigram-lines .mini-line.broken:after{height:5px}
+.trigram-card h3{font:19px var(--serif);font-weight:400;margin:8px 0 1px;color:var(--white)}
+.trigram-card .cn{font-size:11px;color:var(--muted)}
+.trigram-card p{font-size:11px;color:#b8c3b5;line-height:1.5;margin:8px 0 0}
+.method-layout{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.method-card{padding:20px}
+.method-card h3{font:21px var(--serif);font-weight:400;color:var(--white);margin:0 0 8px}
+.method-card p{font-size:12px;color:#bbc5b8;line-height:1.6;margin:7px 0}
+.odds{width:100%;border-collapse:collapse;margin-top:12px;font-size:11px}
+.odds th,.odds td{text-align:left;padding:8px 6px;border-bottom:1px solid rgba(255,255,255,.07)}
+.odds th{color:var(--muted);font-size:9px;letter-spacing:.12em;text-transform:uppercase;font-weight:500}
+.odds td{color:#d4d9ca;font-variant-numeric:tabular-nums}
+.odds td:first-child{color:var(--gold)}
+.method-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:13px}
+.method-step{border:1px solid rgba(195,167,118,.16);background:rgba(7,14,12,.22);border-radius:8px;padding:10px}
+.method-step b{display:block;font:18px var(--serif);color:var(--gold);font-weight:400}
+.method-step span{display:block;font-size:10px;color:var(--muted);margin-top:3px}
+.footer{display:flex;justify-content:space-between;gap:16px;border-top:1px solid rgba(195,167,118,.16);margin-top:28px;padding-top:14px;color:#78877b;font-size:10px}
+.footer a{color:#a99873;text-decoration:none}.footer a:hover{text-decoration:underline}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,15px);opacity:0;pointer-events:none;background:#dfd3b7;color:#18221d;border-radius:8px;padding:10px 15px;box-shadow:var(--shadow);font-size:12px;transition:.22s;z-index:10}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:950px){.consult-layout{grid-template-columns:minmax(260px,320px) minmax(0,1fr)}.library-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.trigram-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){.app{padding:16px 14px 30px}.hero{padding:22px 0 17px}.hero-note{display:none}.consult-layout{grid-template-columns:1fr}.visual-column{grid-row:1}.controls{grid-row:2}.stage{min-height:330px}#hexCanvas{height:330px}.library-head{align-items:stretch;flex-direction:column}.search-wrap{width:100%}.library-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.method-layout{grid-template-columns:1fr}.footer{flex-direction:column}.top-actions .ghost-btn:first-child{display:none}}
+@media(max-width:430px){.brand-name{font-size:16px}.brand-kicker{font-size:8px}.brand-mark{width:34px;height:34px}.tab{padding:8px 12px;font-size:12px}.result-strip{grid-template-columns:1fr}.result-card{padding:14px 16px}.moving-lines{grid-template-columns:1fr}.stage{min-height:315px}#hexCanvas{height:315px}.stage-labels{gap:22px}.trigram-grid{grid-template-columns:1fr 1fr}.method-steps{grid-template-columns:1fr}.library-detail{grid-template-columns:1fr;gap:4px}.detail-glyph{font-size:45px;padding:0}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><div class="brand-mark">易</div><div><div class="brand-kicker">A self-contained oracle</div><div class="brand-name">Yijing / The Field of Change</div></div></div>
+    <div class="top-actions"><button class="ghost-btn" id="exportBtn" type="button">Export reading ↗</button><button class="ghost-btn" id="resetBtn" type="button">Reset</button></div>
+  </header>
+  <section class="hero">
+    <div><div class="eyebrow">64 figures · 8 trigrams · 6 lines</div><h1>Attend to the changing pattern.</h1><p>Cast a figure, follow its moving lines, and examine the relation between the situation as formed and the situation it may become.</p></div>
+    <div class="hero-note">“Change does not happen all at once.<br>It gathers, crosses a threshold, and turns.”</div>
+  </section>
+  <nav class="tabs" aria-label="Main sections">
+    <button class="tab active" data-tab="consult" type="button">Consult</button>
+    <button class="tab" data-tab="library" type="button">64 Hexagrams</button>
+    <button class="tab" data-tab="trigrams" type="button">Eight Trigrams</button>
+    <button class="tab" data-tab="method" type="button">Casting & Method</button>
+  </nav>
+
+  <main>
+    <section class="view active" id="view-consult">
+      <div class="consult-layout">
+        <aside class="panel controls">
+          <div class="section-head"><h2>Consult the oracle</h2><span class="badge">Local session</span></div>
+          <label class="field-label" for="question">Question / situation</label>
+          <textarea id="question" placeholder="What is the situation I need to understand?" maxlength="500"></textarea>
+          <div class="field-label">Casting method</div>
+          <div class="method-switch" role="group" aria-label="Casting method">
+            <button class="method-option active" data-method="coins" type="button"><strong>Three coins</strong><small>1 : 3 : 3 : 1 odds</small></button>
+            <button class="method-option" data-method="yarrow" type="button"><strong>Yarrow model</strong><small>1 : 5 : 7 : 3 odds</small></button>
+          </div>
+          <div class="method-note" id="methodNote">Each line is cast from three coins. Heads = 3, tails = 2. Six throws build the figure from the bottom upward.</div>
+          <div class="actions">
+            <button class="action-btn primary" id="castNext" type="button">Cast next line</button>
+            <button class="action-btn" id="castAll" type="button">Cast all six</button>
+            <button class="action-btn wide" id="manualToggle" type="button">Enter a cast manually</button>
+          </div>
+          <div class="manual-panel" id="manualPanel">
+            <div class="micro" style="margin-bottom:9px">Line values · bottom to top</div>
+            <div class="manual-grid" id="manualGrid"></div>
+            <button class="action-btn wide" id="applyManual" type="button" style="margin-top:10px">Use these six lines</button>
+            <p class="manual-foot">6 = changing yin · 7 = stable yang · 8 = stable yin · 9 = changing yang</p>
+          </div>
+          <div class="line-log">
+            <div class="line-log-head"><span class="micro">Six-line record</span><span class="micro" id="progressText">0 / 6 lines</span></div>
+            <div id="lineRows"></div>
+          </div>
+        </aside>
+
+        <section class="visual-column">
+          <div class="stage">
+            <div class="stage-top"><span class="eyebrow">Hexagram structure / bottom line first</span><span class="stage-state" id="stageState">Awaiting a cast</span></div>
+            <canvas id="hexCanvas" aria-label="WebGL rendering of the hexagram lines"></canvas>
+            <div class="stage-placeholder" id="stagePlaceholder"><b>易</b><span>Let the six lines take shape</span></div>
+            <div class="stage-labels" id="stageLabels" style="display:none">
+              <div class="stage-label"><strong id="stagePrimaryName">—</strong><span id="stagePrimaryNo">Primary figure</span></div>
+              <div class="stage-label secondary" id="stageSecondaryLabel"><strong id="stageSecondaryName">—</strong><span id="stageSecondaryNo">Relating figure</span></div>
+            </div>
+          </div>
+          <div class="result-strip" id="resultStrip" style="display:none">
+            <article class="panel result-card"><div class="num">01 / The formed situation</div><h3><span id="primaryName">—</span><span class="hanzi" id="primaryHanzi"></span></h3><div class="pinyin" id="primaryPinyin"></div><p id="primaryTheme"></p></article>
+            <article class="panel result-card secondary" id="relatingCard"><div class="num">02 / The relating figure</div><h3><span id="relatingName">—</span><span class="hanzi" id="relatingHanzi"></span></h3><div class="pinyin" id="relatingPinyin"></div><p id="relatingTheme"></p></article>
+          </div>
+          <article class="panel interpretation" id="interpretation" style="display:none">
+            <div class="interpretation-head"><h3>Reading the configuration</h3><span class="badge">Reflective lens</span></div>
+            <div class="interpretation-body" id="interpretationBody"></div>
+            <div class="moving-lines" id="movingLines"></div>
+            <div class="small-note">The short interpretive notes in this tool are original contemporary prompts, not translations of the classical judgments or line texts. Use the figure to sharpen inquiry rather than to outsource a decision.</div>
+          </article>
+        </section>
+      </div>
+    </section>
+
+    <section class="view" id="view-library">
+      <div class="library-head"><div><div class="eyebrow">King Wen sequence</div><h2>The 64 hexagrams</h2><p>Browse the received sequence, the line structure, and a brief contemporary interpretive lens.</p></div><div class="search-wrap"><input class="search-field" id="librarySearch" type="search" placeholder="Search name, Chinese, pinyin, number…" /></div></div>
+      <article class="panel library-detail" id="libraryDetail"><div class="detail-glyph" id="detailGlyph">䷀</div><div class="detail-copy"><h3 id="detailName">Select a hexagram</h3><div class="sub" id="detailSub"></div><p id="detailTheme"></p><div class="detail-trigrams" id="detailTrigrams"></div></div></article>
+      <div class="library-grid" id="libraryGrid"></div>
+    </section>
+
+    <section class="view" id="view-trigrams">
+      <div class="reference-head"><div class="eyebrow">Eight fundamental figures</div><h2>Trigrams</h2><p>Each three-line figure is read from the bottom upward. The lower trigram is often called the inner; the upper, the outer.</p></div>
+      <div class="trigram-grid" id="trigramGrid"></div>
+    </section>
+
+    <section class="view" id="view-method">
+      <div class="reference-head"><div class="eyebrow">A transparent casting model</div><h2>How the lines are made</h2><p>The number assigned to each throw matters: it preserves the distinction between a line at rest and a line in transition.</p></div>
+      <div class="method-layout">
+        <article class="panel method-card"><h3>Three-coin method</h3><p>Each coin contributes 2 or 3. Heads is assigned 3 and tails 2 in this implementation. Their sum gives one of four line values. Six throws form the hexagram, beginning at the bottom.</p>
+          <table class="odds"><thead><tr><th>Sum</th><th>Line</th><th>Meaning</th><th>Chance</th></tr></thead><tbody>
+            <tr><td>6</td><td>Broken</td><td>Old yin · changes to yang</td><td>1 / 8</td></tr><tr><td>7</td><td>Solid</td><td>Young yang · stable</td><td>3 / 8</td></tr><tr><td>8</td><td>Broken</td><td>Young yin · stable</td><td>3 / 8</td></tr><tr><td>9</td><td>Solid</td><td>Old yang · changes to yin</td><td>1 / 8</td></tr>
+          </tbody></table><div class="method-steps"><div class="method-step"><b>2</b><span>Tails</span></div><div class="method-step"><b>3</b><span>Heads</span></div><div class="method-step"><b>6</b><span>Throws per figure</span></div></div>
+        </article>
+        <article class="panel method-card"><h3>Yarrow-stalk probability model</h3><p>The yarrow option simulates the traditional result distribution; it does not reproduce the physical stalk-counting procedure. The probabilities differ from coins, even though each method gives a changing line one quarter of the time.</p>
+          <table class="odds"><thead><tr><th>Value</th><th>Line</th><th>Meaning</th><th>Chance</th></tr></thead><tbody>
+            <tr><td>6</td><td>Broken</td><td>Old yin · changing</td><td>1 / 16</td></tr><tr><td>7</td><td>Solid</td><td>Young yang · stable</td><td>5 / 16</td></tr><tr><td>8</td><td>Broken</td><td>Young yin · stable</td><td>7 / 16</td></tr><tr><td>9</td><td>Solid</td><td>Old yang · changing</td><td>3 / 16</td></tr>
+          </tbody></table><div class="small-note">A yarrow-model cast is a probability simulation, not a claim that the app physically performs the stalk ritual.</div>
+        </article>
+        <article class="panel method-card"><h3>How to read the transformation</h3><p>First identify the primary hexagram from all six lines. Every 6 or 9 then reverses: a changing yin becomes yang, and a changing yang becomes yin. The altered six lines form the relating hexagram.</p><p>Line positions are counted upward from 1 at the bottom to 6 at the top. The three lower lines form one trigram; the three upper lines form the other.</p></article>
+        <article class="panel method-card"><h3>About this implementation</h3><p>The 64 structural records use the received King Wen order, Unicode hexagram glyphs, and bottom-up binary patterns. The original text in this tool is a compact reflective layer written for this interface; it is not a substitute for studying different translations and commentarial traditions.</p><p>Random results are generated locally in the browser using the Web Crypto API where available. No question or casting data is sent to a server.</p></article>
+      </div>
+    </section>
+  </main>
+  <footer class="footer"><span>YIJING / A small instrument for observing change · No network connection required</span><span>Structural data: <a href="https://thehexagrams.com/iching-data/" target="_blank" rel="noreferrer">CC0 I Ching dataset, v1.0.0</a> · Interpretation notes original</span></footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+'use strict';
+
+// King Wen order, received Chinese names, bottom-up line patterns, and original short reading lenses.
+const RAW = [
+['Force','乾','qián','111111','Power gathers through consistency. Initiative is useful when it remains answerable to proportion.'],
+['Field','坤','kūn','000000','Make room for what is already taking shape. Receptivity here is an active capacity to sustain and give form.'],
+['Sprouting','屯','zhūn','100010','A beginning is tangled with its conditions. Establish a foothold before trying to master the whole terrain.'],
+['Enveloping','蒙','méng','010001','Uncertainty is not empty; it is a field that needs careful questions, patient teaching, and tested boundaries.'],
+['Attending','需','xū','111010','Waiting is a form of preparation. Preserve resources and read the conditions before crossing into action.'],
+['Lawsuit','訟','sòng','010111','Opposed accounts have hardened. Distinguish the actual point of conflict from the stories each side uses to defend it.'],
+['Leading','師','shī','010000','Collective force needs discipline, a clear purpose, and accountable leadership; numbers alone do not create direction.'],
+['Grouping','比','bǐ','000010','Affiliation becomes durable through trust and shared practice. Notice what binds the group and what it quietly excludes.'],
+['Small Accumulating','小畜','xiǎo xù','111011','Small restraints and repeated adjustments can shape a larger force. Accumulate capacity without mistaking delay for defeat.'],
+['Treading','履','lǚ','110111','Move carefully where power is uneven. Conduct is tested not by confidence but by attention to the ground beneath each step.'],
+['Pervading','泰','tài','111000','Different levels communicate and exchange. Preserve the channels that let a favourable arrangement circulate.'],
+['Obstruction','否','pǐ','000111','The parts no longer meet. Do not confuse formal order with real exchange; look for the blocked passage.'],
+['Concording People','同人','tóng rén','101111','Cooperation reaches beyond private affinity when it can name a common task without erasing difference.'],
+['Great Possessing','大有','dà yǒu','111101','Abundance creates obligations. The question is how resources are held, distributed, and prevented from becoming self-justifying power.'],
+['Humbling','謙','qiān','001000','A grounded estimate of oneself makes room for others and for correction. Modesty here is structural, not theatrical.'],
+['Providing-For','豫','yù','000100','Anticipation can mobilize a community. Give enthusiasm a rhythm and a practical form before it dissipates.'],
+['Following','隨','suí','100110','Adaptation is intelligent when it can still distinguish a living signal from mere pressure to conform.'],
+['Correcting','蠱','gǔ','011001','Inherited disorder asks for diagnosis and repair. Trace the conditions that reproduce the fault, not only its visible symptoms.'],
+['Nearing','臨','lín','110000','Influence is approaching and responsibility grows with proximity. Meet the situation while there is still room to shape it.'],
+['Viewing','觀','guān','000011','Distance can reveal the pattern of a whole. Observe conduct and consequences before deciding what the spectacle means.'],
+['Gnawing Bite','噬嗑','shì kè','100101','A real obstruction must be identified and worked through. Clarity requires a proportionate response, not indiscriminate force.'],
+['Adorning','賁','bì','101001','Form can make meaning legible, but surface should remain in service of substance. Ask what the ornament reveals and what it conceals.'],
+['Stripping','剝','bō','000001','The supporting layers are falling away. Conserve what is essential and recognize when a structure can no longer be repaired from its surface.'],
+['Returning','復','fù','100000','A small movement begins again after decline. Protect the first sign of renewal; it does not need to become a grand declaration.'],
+['Without Embroiling','无妄','wú wàng','100111','Act without manufacturing a result in advance. Keep intention close to reality and let consequences test the premise.'],
+['Great Accumulating','大畜','dà xù','111001','Hold power in reserve and cultivate what can carry it. Restraint is fruitful when it increases real capacity.'],
+['Swallowing','頤','yí','100001','What enters and leaves matters: food, speech, images, and attention. Examine the sources that sustain the body and the mind.'],
+['Great Exceeding','大過','dà guò','011110','The load has exceeded the structure. A response must address the imbalance itself, not simply demand more endurance.'],
+['Gorge','坎','kǎn','010010','A difficult passage repeats. Learn its contours, keep a reliable rhythm, and do not mistake familiarity with danger for safety.'],
+['Radiance','離','lí','101101','Clarity depends on what it attaches to. Keep illumination connected to sound supports rather than to appearances alone.'],
+['Conjoining','咸','xián','001110','Influence moves through sensitivity and response. Notice what resonates, and whether the exchange is mutual or merely suggestive.'],
+['Persevering','恆','héng','011100','Continuity is not immobility. Sustain a direction by adapting its practice to changing conditions.'],
+['Retiring','遯','dùn','001111','Withdrawal can preserve the ability to act later. Choose distance deliberately rather than allowing retreat to become evasion.'],
+['Great Invigorating','大壯','dà zhuàng','111100','Strength is present and visible. Its quality is measured by restraint, timing, and the ability not to trample what it can move.'],
+['Prospering','晉','jìn','000101','Visibility and advancement open doors. Keep the work aligned with the reason it deserves recognition.'],
+['Darkening of the Light','明夷','míng yí','101000','Protect insight under adverse conditions. Concealment may preserve the source of light until it can be used without being destroyed.'],
+['Dwelling People','家人','jiā rén','101011','A shared life is shaped by everyday roles and repeated conduct. Make expectations explicit and authority reciprocal.'],
+['Polarising','睽','kuí','110101','Difference is real and may be productive. Seek a narrow point of cooperation without pretending the wider disagreement has vanished.'],
+['Limping','蹇','jiǎn','001010','Progress is obstructed by the terrain. Reconsider the route, seek assistance, and avoid turning persistence into a test of pride.'],
+['Taking-Apart','解','jiě','010100','Pressure can release when its source is addressed. Untie what can be untied, then avoid rebuilding the same knot.'],
+['Diminishing','損','sǔn','110001','Reduction can restore balance when it removes excess rather than the conditions of life. Be precise about what is surrendered.'],
+['Augmenting','益','yì','100011','An increase becomes valuable when it circulates and improves shared capacity. Give benefit a direction beyond accumulation.'],
+['Displacement','夬','guài','111110','A decisive disclosure or separation is approaching. State what must be stated, while watching the risks created by blunt force.'],
+['Coupling','姤','gòu','011111','An encounter introduces an influence that may grow quickly. Recognize its force early and decide what boundaries it requires.'],
+['Clustering','萃','cuì','000110','People and resources are gathering around a center. Examine the legitimacy of that center and the obligations created by assembly.'],
+['Ascending','升','shēng','011000','Growth proceeds through steady stages and support. Build the conditions that allow progress to continue after the first rise.'],
+['Confining','困','kùn','010110','Available resources and room for action are narrowing. Preserve what is essential and look for a truthful account of the constraint.'],
+['Welling','井','jǐng','011010','A common source can outlast changing institutions. Maintain access and care for the shared infrastructure on which life depends.'],
+['Skinning','革','gé','101110','A deep change may be necessary when the old form has lost legitimacy. Timing and credibility matter as much as the announcement.'],
+['Holding','鼎','dǐng','011101','A new vessel gives durable form to transformed material. Consider the practices and institutions that can hold the change.'],
+['Shake','震','zhèn','100100','A shock breaks routine and reveals what is stable. Let alertness replace panic; use the disturbance to test foundations.'],
+['Bound','艮','gèn','001001','Stillness can stop an unproductive chain of reaction. Find the boundary that allows attention to settle without becoming paralysis.'],
+['Infiltrating','漸','jiàn','001011','Lasting change advances by stages. Respect sequence, cultivate trust, and do not demand that slow processes imitate sudden ones.'],
+['Converting the Maiden','歸妹','guī mèi','110100','A connection is formed under uneven or unsettled terms. Inspect the roles and expectations before treating the arrangement as secure.'],
+['Abounding','豐','fēng','101100','A moment of fullness brings opportunity and distortion together. Use the light while it lasts; abundance is not a permanent climate.'],
+['Sojourning','旅','lǚ','001101','The traveller has limited claims and temporary shelter. Keep obligations clear, travel lightly, and attend to local conditions.'],
+['Ground','巽','xùn','011011','Influence works by entering gradually and repeatedly. Persistence can reach where force cannot, but subtlety also needs discernment.'],
+['Open','兌','duì','110110','Exchange and pleasure renew the spirit when they remain sincere. Distinguish shared delight from flattery or easy agreement.'],
+['Dispersing','渙','huàn','010011','Rigid concentrations begin to dissolve. Reconnect separated parts around a source of meaning rather than trying to preserve every boundary.'],
+['Articulating','節','jié','110010','Limits make continuity possible. A useful measure protects life; an excessive one turns order into confinement.'],
+['Center Returning','中孚','zhōng fú','110011','Trust depends on correspondence between inner conviction and outward conduct. Credibility is built through consistency, not insistence.'],
+['Small Exceeding','小過','xiǎo guò','001100','Small details carry unusual weight. Keep actions modest and exact; this is not the moment for a grand gesture.'],
+['Already Fording','既濟','jì jì','101010','A crossing has been completed, but completion creates a new maintenance problem. Check the balance before assuming the work is finished.'],
+['Not Yet Fording','未濟','wèi jì','010101','The crossing is unfinished and the pattern remains open. Keep distinctions clear, preserve momentum, and do not call the outcome too early.']
+];
+
+const TRIGRAMS = [
+ {key:'qian',bits:'111',name:'Heaven',han:'乾',glyph:'☰',image:'creative force',quality:'Creative',note:'Initiating, strong, generative movement.'},
+ {key:'kun',bits:'000',name:'Earth',han:'坤',glyph:'☷',image:'receptive ground',quality:'Receptive',note:'Nourishing, yielding, sustaining capacity.'},
+ {key:'zhen',bits:'100',name:'Thunder',han:'震',glyph:'☳',image:'arousing movement',quality:'Arousing',note:'Shock, awakening, the first movement.'},
+ {key:'xun',bits:'011',name:'Wind / Wood',han:'巽',glyph:'☴',image:'penetrating influence',quality:'Gentle',note:'Gradual entry, adaptation, permeation.'},
+ {key:'kan',bits:'010',name:'Water',han:'坎',glyph:'☵',image:'depth and danger',quality:'Abysmal',note:'A difficult passage, depth, repeated risk.'},
+ {key:'li',bits:'101',name:'Fire',han:'離',glyph:'☲',image:'clinging clarity',quality:'Radiant',note:'Illumination, attachment, dependence on support.'},
+ {key:'gen',bits:'001',name:'Mountain',han:'艮',glyph:'☶',image:'stillness and boundary',quality:'Still',note:'Stopping, limits, settled attention.'},
+ {key:'dui',bits:'110',name:'Lake',han:'兌',glyph:'☱',image:'open exchange',quality:'Joyous',note:'Pleasure, communication, responsive openness.'}
+];
+const TRI_BY_BITS = Object.fromEntries(TRIGRAMS.map(t=>[t.bits,t]));
+const HEXAGRAMS = RAW.map((r,i)=>({number:i+1,name:r[0],han:r[1],pinyin:r[2],bits:r[3],theme:r[4],glyph:String.fromCodePoint(0x4DC0+i)}));
+const HEX_BY_BITS = Object.fromEntries(HEXAGRAMS.map(h=>[h.bits,h]));
+const POSITIONS = [
+ ['Entry','The first foothold: what is beginning, and what conditions are already present?'],
+ ['Foundation','The early structure: what needs to be made reliable before it can carry more?'],
+ ['Friction','The unstable middle: where are competing demands or hidden costs becoming visible?'],
+ ['Crossing','The threshold: what must change in conduct as the situation becomes exposed?'],
+ ['Stewardship','The position of influence: how is responsibility being exercised and distributed?'],
+ ['Limit','The upper boundary: what has reached its natural limit, and what should now be released?']
+];
+
+const $ = id => document.getElementById(id);
+let lineValues = Array(6).fill(null);
+let lineMeta = Array(6).fill(null);
+let method = 'coins';
+let lastReading = null;
+let selectedLibraryHex = null;
+let toastTimer = 0;
+
+function randomInt(max){
+  if (window.crypto && crypto.getRandomValues) {
+    const range = 0x100000000;
+    const limit = range - (range % max);
+    const a = new Uint32Array(1);
+    let n; do { crypto.getRandomValues(a); n = a[0]; } while (n >= limit);
+    return n % max;
+  }
+  return Math.floor(Math.random()*max);
+}
+function castLine(kind=method){
+  if(kind==='yarrow'){
+    const n=randomInt(16);
+    const value=n<1?6:n<6?7:n<13?8:9;
+    return {value,coins:null,method:'yarrow'};
+  }
+  const coins=Array.from({length:3},()=>randomInt(2)===1?3:2);
+  return {value:coins.reduce((a,b)=>a+b,0),coins,method:'coins'};
+}
+function valueLabel(v){return ({6:'Old yin',7:'Young yang',8:'Young yin',9:'Old yang'})[v]||'—';}
+function isYang(v){return v===7||v===9;}
+function isChanging(v){return v===6||v===9;}
+function binaryFromValues(values){return values.map(v=>isYang(v)?'1':'0').join('');}
+function lookupHex(bits){return HEX_BY_BITS[bits]||null;}
+function trigramsFor(hex){return {lower:TRI_BY_BITS[hex.bits.slice(0,3)],upper:TRI_BY_BITS[hex.bits.slice(3,6)]};}
+function updateMethodUI(){
+  document.querySelectorAll('.method-option').forEach(b=>b.classList.toggle('active',b.dataset.method===method));
+  $('methodNote').textContent=method==='coins'
+    ?'Each line is cast from three coins. Heads = 3, tails = 2. Six throws build the figure from the bottom upward.'
+    :'Simulates the traditional yarrow result odds (1 : 5 : 7 : 3). This models the distribution; it does not perform the physical stalk-counting ritual.';
+}
+function renderManualGrid(){
+  $('manualGrid').innerHTML=Array.from({length:6},(_,i)=>`<div class="manual-field"><label for="manual-${i}">Line ${i+1}</label><select id="manual-${i}" data-line="${i}"><option value="" selected>Choose…</option><option value="6">6 · old yin</option><option value="7">7 · young yang</option><option value="8">8 · young yin</option><option value="9">9 · old yang</option></select></div>`).join('');
+  // Values are committed together with the explicit button below, so untouched 7s are valid entries too.
+}
+function renderLineRows(){
+  let done=0;
+  const html=[];
+  for(let i=5;i>=0;i--){
+    const v=lineValues[i]; if(v!==null)done++;
+    const changing=v!==null&&isChanging(v);
+    const symbol=v===null?'':isYang(v)?'<span class="line-bar full"></span>':'<span class="line-bar half"></span><span class="line-bar half"></span>';
+    const meta=lineMeta[i];
+    const face=meta&&meta.coins?meta.coins.map(c=>c===3?'H':'T').join(' '):'';
+    html.push(`<div class="line-row"><span class="line-no">${i+1}</span><span class="line-symbol ${changing?'changing':''}">${v===null?'<span style="color:#536258">· · ·</span>':symbol}</span><span class="line-value">${v===null?'—':v}</span><span class="line-state ${changing?'change':''}">${v===null?'waiting':face|| (changing?'moving':'stable')}</span></div>`);
+  }
+  $('lineRows').innerHTML=html.join('');
+  $('progressText').textContent=`${done} / 6 lines`;
+  $('castNext').disabled=done===6;
+  $('castNext').textContent=done===6?'Figure complete':'Cast next line';
+}
+function renderAll(){
+  renderLineRows();
+  const complete=lineValues.every(v=>v!==null);
+  if(complete){
+    const bits=binaryFromValues(lineValues);
+    const primary=lookupHex(bits);
+    const changes=lineValues.map((v,i)=>isChanging(v)?i:-1).filter(i=>i>=0);
+    const relatedBits=lineValues.map((v,i)=>isChanging(v)?(isYang(v)?'0':'1'):(isYang(v)?'1':'0')).join('');
+    const related=changes.length?lookupHex(relatedBits):null;
+    const usedMethods=[...new Set(lineMeta.map(m=>m&&m.method).filter(Boolean))];
+    lastReading={question:$('question').value.trim(),method:usedMethods.length===1?usedMethods[0]:'mixed',values:[...lineValues],meta:lineMeta.map(m=>m?{...m}:null),primary,related,changes,created:new Date().toISOString()};
+    renderResult(lastReading);
+  }else{
+    lastReading=null;
+    $('stageState').textContent='Casting in progress';
+    $('stagePlaceholder').style.display='block';
+    $('stagePlaceholder').innerHTML='<b>易</b><span>Six lines are taking shape</span>';
+    $('stageLabels').style.display='none';$('resultStrip').style.display='none';$('interpretation').style.display='none';
+    drawHexagrams(null,null,[]);
+  }
+}
+function renderResult(reading){
+  const {primary,related,changes,values}=reading;
+  const pTri=trigramsFor(primary);
+  $('stagePlaceholder').style.display='none';
+  $('stageState').textContent=changes.length?`${changes.length} changing line${changes.length===1?'':'s'}`:'No changing lines';
+  $('stageLabels').style.display='flex';
+  $('stagePrimaryName').textContent=primary.name;$('stagePrimaryNo').textContent=`${String(primary.number).padStart(2,'0')} · primary`;
+  $('stageSecondaryLabel').style.display=related?'block':'none';
+  $('stageSecondaryName').textContent=related?related.name:'No change';$('stageSecondaryNo').textContent=related?`${String(related.number).padStart(2,'0')} · relating`:'static figure';
+  $('resultStrip').style.display='grid';
+  $('primaryName').textContent=primary.name;$('primaryHanzi').textContent=primary.han;$('primaryPinyin').textContent=primary.pinyin;$('primaryTheme').textContent=primary.theme;
+  if(related){
+    $('relatingCard').style.display='block';$('relatingName').textContent=related.name;$('relatingHanzi').textContent=related.han;$('relatingPinyin').textContent=related.pinyin;$('relatingTheme').textContent=related.theme;
+  }else{
+    $('relatingCard').style.display='block';$('relatingName').textContent='Unchanged';$('relatingHanzi').textContent='';$('relatingPinyin').textContent='No relating hexagram';$('relatingTheme').textContent='With no changing lines, the primary figure remains the complete configuration.';
+  }
+  const lower=pTri.lower,upper=pTri.upper;
+  const body=[];
+  body.push(`<p><span class="lens-label">Inner / lower</span> ${lower.name} — ${lower.image}. <span class="lens-label">Outer / upper</span> ${upper.name} — ${upper.image}.</p>`);
+  body.push(`<p>${primary.theme} Consider what happens when ${lower.image} meets ${upper.image}: what is happening within the situation, and what is shaping it from outside?</p>`);
+  if(related){
+    const rt=trigramsFor(related);
+    body.push(`<p>The changing lines connect this configuration to <strong>${related.name}</strong> (${related.han}). Read the relating figure as a second arrangement to compare against the first, not as a guaranteed forecast. Its lower and upper images are ${rt.lower.image} and ${rt.upper.image}.</p>`);
+  }else{
+    body.push('<p>No line changes. Work with this hexagram as a single image; stability is part of the record, not a failed cast.</p>');
+  }
+  $('interpretationBody').innerHTML=body.join('');
+  $('movingLines').innerHTML=changes.length?changes.map(i=>{
+    const v=values[i],pos=POSITIONS[i];
+    const transition=v===6?'Yin → yang':'Yang → yin';
+    const specific=v===6?'A receptive, hidden, or constrained element is becoming active. Ask what is ready to take form, and what support it will need.':'An active or established force is loosening. Ask where restraint, delegation, or space is now more useful than continued pressure.';
+    return `<div class="moving-item"><strong>Line ${i+1} · ${pos[0]} · ${transition}</strong>${pos[1]} ${specific}</div>`;
+  }).join(''):'<div class="moving-item" style="grid-column:1/-1;border-color:rgba(134,162,145,.18)"><strong style="color:#9db7a5">No moving lines</strong>The six-line pattern holds. Consider the hexagram’s overall structure before looking for a transition.</div>';
+  $('interpretation').style.display='block';
+  drawHexagrams(primary,related,changes);
+}
+function castNext(){
+  const index=lineValues.findIndex(v=>v===null);
+  if(index<0)return;
+  const result=castLine(method);lineValues[index]=result.value;lineMeta[index]=result;renderAll();
+  if(lineValues.every(v=>v!==null))toast('Six lines complete. The reading is formed.');
+}
+function castAll(){
+  lineValues=Array(6).fill(null);lineMeta=Array(6).fill(null);
+  for(let i=0;i<6;i++){const result=castLine(method);lineValues[i]=result.value;lineMeta[i]=result;}
+  renderAll();toast('A new six-line figure has been cast.');
+}
+function resetReading(){lineValues=Array(6).fill(null);lineMeta=Array(6).fill(null);$('question').value='';$('manualPanel').classList.remove('open');$('manualToggle').textContent='Enter a cast manually';renderAll();toast('Session cleared.');}
+function toast(msg){const el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2300);}
+function exportReading(){
+  if(!lastReading){toast('Complete all six lines before exporting.');return;}
+  const data={application:'Yijing / The Field of Change',version:'1.0',...lastReading,primary:{number:lastReading.primary.number,name:lastReading.primary.name,chinese:lastReading.primary.han,pinyin:lastReading.primary.pinyin,bottomUpBinary:lastReading.primary.bits,originalLens:lastReading.primary.theme},relating:lastReading.related?{number:lastReading.related.number,name:lastReading.related.name,chinese:lastReading.related.han,pinyin:lastReading.related.pinyin,bottomUpBinary:lastReading.related.bits,originalLens:lastReading.related.theme}:null,changingLineNumbers:lastReading.changes.map(i=>i+1)};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`yijing-reading-${new Date().toISOString().slice(0,10)}.json`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);toast('Reading exported as JSON.');
+}
+function miniLines(bits){return `<div class="mini-lines">${[...bits].reverse().map(b=>`<div class="mini-line ${b==='0'?'broken':''}"></div>`).join('')}</div>`;}
+function renderLibrary(){
+  const q=$('librarySearch').value.trim().toLowerCase();
+  const filtered=HEXAGRAMS.filter(h=>`${h.number} ${h.name} ${h.han} ${h.pinyin} ${h.theme}`.toLowerCase().includes(q));
+  $('libraryGrid').innerHTML=filtered.map(h=>`<button class="hex-card ${selectedLibraryHex===h.number?'selected':''}" data-hex="${h.number}" type="button"><div class="hex-card-top"><span class="glyph">${h.glyph}</span><span class="n">${String(h.number).padStart(2,'0')} / 64</span></div><strong>${h.name}</strong><small>${h.han} · ${h.pinyin}</small>${miniLines(h.bits)}</button>`).join('');
+  $('libraryGrid').querySelectorAll('[data-hex]').forEach(b=>b.addEventListener('click',()=>selectLibraryHex(Number(b.dataset.hex))));
+}
+function selectLibraryHex(n){
+  const h=HEXAGRAMS[n-1];selectedLibraryHex=n;const t=trigramsFor(h);
+  $('libraryDetail').classList.add('open');$('detailGlyph').textContent=h.glyph;$('detailName').textContent=`${String(h.number).padStart(2,'0')} · ${h.name} ${h.han}`;$('detailSub').textContent=`${h.pinyin} · ${h.bits} · bottom line first`;$('detailTheme').textContent=h.theme;
+  $('detailTrigrams').innerHTML=`<span class="trigram-chip">Lower: ${t.lower.name} ${t.lower.glyph}</span><span class="trigram-chip">Upper: ${t.upper.name} ${t.upper.glyph}</span>`;
+  renderLibrary();
+}
+function renderTrigrams(){
+  $('trigramGrid').innerHTML=TRIGRAMS.map(t=>`<article class="panel trigram-card"><div class="trigram-card-head"><span class="trigram-glyph">${t.glyph}</span>${miniLines(t.bits).replace('mini-lines','trigram-lines')}</div><h3>${t.name}</h3><div class="cn">${t.han} · ${t.quality} · ${t.bits}</div><p>${t.note}</p></article>`).join('');
+}
+function switchTab(tab){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===`view-${tab}`));
+  if(tab==='library')renderLibrary();
+  if(tab==='trigrams')renderTrigrams();
+}
+
+// WebGL 1 renderer: all line marks and diagram geometry are GPU-drawn triangles.
+const canvas=$('hexCanvas');
+let gl=null,ctx2d=null,program=null,posLoc=-1,colLoc=-1,buffer=null;
+function initGL(){
+  try{gl=canvas.getContext('webgl',{alpha:true,antialias:true,premultipliedAlpha:false})||canvas.getContext('experimental-webgl');}catch(e){gl=null;}
+  if(!gl){try{ctx2d=canvas.getContext('2d');}catch(e){ctx2d=null;}return;}
+  const vs=`attribute vec2 a_position; attribute vec4 a_color; varying vec4 v_color; void main(){gl_Position=vec4(a_position,0.0,1.0);v_color=a_color;}`;
+  const fs=`precision mediump float; varying vec4 v_color; void main(){gl_FragColor=v_color;}`;
+  function shader(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(s));return s;}
+  try{program=gl.createProgram();gl.attachShader(program,shader(gl.VERTEX_SHADER,vs));gl.attachShader(program,shader(gl.FRAGMENT_SHADER,fs));gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(program));gl.useProgram(program);posLoc=gl.getAttribLocation(program,'a_position');colLoc=gl.getAttribLocation(program,'a_color');buffer=gl.createBuffer();gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);}catch(e){gl=null;console.warn('WebGL initialization failed:',e);}
+}
+function drawHexagrams(primary,related,changes){
+  const rect=canvas.getBoundingClientRect();const dpr=Math.min(window.devicePixelRatio||1,2);const W=Math.max(1,Math.round(rect.width*dpr));const H=Math.max(1,Math.round(rect.height*dpr));
+  if(canvas.width!==W||canvas.height!==H){canvas.width=W;canvas.height=H;}
+  if(!gl){
+    if(!ctx2d)return;
+    const c=ctx2d;c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,rect.width,rect.height);
+    const w=rect.width,h=rect.height,cx=w/2,cy=h/2-2,r=Math.min(w*.31,145);
+    c.strokeStyle='rgba(195,167,118,.22)';c.lineWidth=1;c.beginPath();c.arc(cx,cy,r,0,Math.PI*2);c.stroke();c.beginPath();c.arc(cx,cy,Math.min(w*.245,112),0,Math.PI*2);c.stroke();
+    if(primary){const paired=!!related,offset=paired?Math.min(w*.205,112):0,lineW=paired?Math.min(116,w*.28):Math.min(154,w*.43),thick=6,step=25.5;
+      function drawFallbackOne(hex,x,rel){for(let i=0;i<6;i++){const y=cy+(2.5-i)*step,changing=!rel&&changes.includes(i);c.fillStyle=changing?'#e89160':rel?'#91b39b':'#e9dfc9';if(hex.bits[i]==='1')c.fillRect(x-lineW/2,y-thick/2,lineW,thick);else{const gap=lineW*.17;c.fillRect(x-lineW/2,y-thick/2,lineW/2-gap/2,thick);c.fillRect(x+gap/2,y-thick/2,lineW/2-gap/2,thick);}}}
+      drawFallbackOne(primary,cx-offset,false);if(related)drawFallbackOne(related,cx+offset,true);
+    }else{c.fillStyle='rgba(195,167,118,.5)';for(let i=0;i<6;i++){const y=cy+(2.5-i)*24;c.beginPath();c.arc(cx,y,3,0,Math.PI*2);c.fill();}}
+    return;
+  }
+  gl.viewport(0,0,W,H);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);
+  const w=rect.width,h=rect.height,verts=[];
+  const clip=(x,y)=>[x/w*2-1,1-y/h*2];
+  const color=(c)=>c;
+  function tri(p1,p2,p3,c){for(const p of [p1,p2,p3]){const q=clip(p[0],p[1]);verts.push(q[0],q[1],c[0],c[1],c[2],c[3]);}}
+  function quad(x1,y1,x2,y2,c){tri([x1,y1],[x2,y1],[x2,y2],c);tri([x1,y1],[x2,y2],[x1,y2],c);}
+  function ring(cx,cy,r1,r2,col,n=88){for(let i=0;i<n;i++){const a=i/n*Math.PI*2,b=(i+1)/n*Math.PI*2;const p1=[cx+Math.cos(a)*r1,cy+Math.sin(a)*r1],p2=[cx+Math.cos(b)*r1,cy+Math.sin(b)*r1],p3=[cx+Math.cos(b)*r2,cy+Math.sin(b)*r2],p4=[cx+Math.cos(a)*r2,cy+Math.sin(a)*r2];tri(p1,p2,p3,col);tri(p1,p3,p4,col);}}
+  function dot(cx,cy,r,col){for(let i=0;i<18;i++){const a=i/18*Math.PI*2,b=(i+1)/18*Math.PI*2;tri([cx,cy],[cx+Math.cos(a)*r,cy+Math.sin(a)*r],[cx+Math.cos(b)*r,cy+Math.sin(b)*r],col);}}
+  const center=w/2,cy=h/2-2;
+  ring(center,cy,Math.min(w*.31,145),Math.min(w*.31,145)+.7,[.69,.61,.43,.18],96);
+  ring(center,cy,Math.min(w*.245,112),Math.min(w*.245,112)+.6,[.69,.61,.43,.13],96);
+  for(let i=0;i<48;i++){const a=i/48*Math.PI*2;const r=Math.min(w*.31,145);const x=center+Math.cos(a)*r,y=cy+Math.sin(a)*r;const len=i%6===0?8:3;quad(x-0.45,y-len/2,x+0.45,y+len/2,[.77,.68,.49,i%6===0?.35:.16]);}
+  if(primary){
+    const paired=!!related;const offset=paired?Math.min(w*.205,112):0;const lineW=paired?Math.min(116,w*.28):Math.min(154,w*.43);const thick=6;const step=25.5;
+    if(paired){
+      const mid=center;for(let y=cy-62;y<=cy+62;y+=31)dot(mid,y,1.2,[.72,.66,.5,.28]);
+    }
+    function drawOne(hex,cx,isRelated){
+      for(let i=0;i<6;i++){
+        const y=cy+(2.5-i)*step;const changing=!isRelated&&changes.includes(i);const c=changing?[.91,.57,.36,.96]:isRelated?[.58,.72,.62,.9]:[.91,.87,.75,.96];
+        const glow=changing?[.88,.43,.25,.18]:isRelated?[.48,.7,.57,.15]:[.88,.83,.7,.10];
+        const segGap=lineW*.17;
+        if(hex.bits[i]==='1'){
+          quad(cx-lineW/2,y-thick*1.7,cx+lineW/2,y+thick*1.7,[...glow.slice(0,3),glow[3]]);
+          quad(cx-lineW/2,y-thick/2,cx+lineW/2,y+thick/2,c);
+        }else{
+          quad(cx-lineW/2,y-thick*1.7,cx-segGap/2,y+thick*1.7,glow);quad(cx+segGap/2,y-thick*1.7,cx+lineW/2,y+thick*1.7,glow);
+          quad(cx-lineW/2,y-thick/2,cx-segGap/2,y+thick/2,c);quad(cx+segGap/2,y-thick/2,cx+lineW/2,y+thick/2,c);
+        }
+        dot(cx-lineW/2-9,y,1.7,changing?[.91,.57,.36,.75]:[.77,.7,.55,.35]);
+      }
+    }
+    drawOne(primary,center-offset,false);
+    if(related)drawOne(related,center+offset,true);
+    else{for(let i=0;i<6;i++){const y=cy+(2.5-i)*step;dot(center+lineW/2+15,y,1.4,[.77,.7,.55,.32]);}}
+  }else{
+    for(let i=0;i<6;i++){const y=cy+(2.5-i)*24;ring(center,y,3.5,4.1,[.76,.67,.48,.48],18);}
+    ring(center,cy,17,18,[.76,.67,.48,.22],44);
+  }
+  const data=new Float32Array(verts);
+  gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,data,gl.DYNAMIC_DRAW);
+  gl.useProgram(program);gl.enableVertexAttribArray(posLoc);gl.vertexAttribPointer(posLoc,2,gl.FLOAT,false,24,0);gl.enableVertexAttribArray(colLoc);gl.vertexAttribPointer(colLoc,4,gl.FLOAT,false,24,8);
+  gl.drawArrays(gl.TRIANGLES,0,verts.length/6);
+}
+
+// Boot
+initGL();
+renderManualGrid();renderLineRows();renderLibrary();renderTrigrams();drawHexagrams(null,null,[]);
+$('castNext').addEventListener('click',castNext);$('castAll').addEventListener('click',castAll);$('resetBtn').addEventListener('click',resetReading);$('exportBtn').addEventListener('click',exportReading);
+$('manualToggle').addEventListener('click',()=>{const open=$('manualPanel').classList.toggle('open');$('manualToggle').textContent=open?'Hide manual entry':'Enter a cast manually';if(open){for(let i=0;i<6;i++)$('manual-'+i).value=lineValues[i]??'';}});
+$('applyManual').addEventListener('click',()=>{const raw=Array.from({length:6},(_,i)=>$('manual-'+i).value);if(raw.some(v=>!['6','7','8','9'].includes(v))){toast('Choose a value for each of the six lines.');return;}for(let i=0;i<6;i++){const value=Number(raw[i]);lineValues[i]=value;lineMeta[i]={value,coins:null,method:'manual'};}renderAll();toast('Manual six-line cast applied.');});
+document.querySelectorAll('.method-option').forEach(b=>b.addEventListener('click',()=>{method=b.dataset.method;updateMethodUI();}));
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
+$('librarySearch').addEventListener('input',renderLibrary);
+$('question').addEventListener('input',()=>{if(lastReading)lastReading.question=$('question').value.trim();});
+window.addEventListener('resize',()=>drawHexagrams(lastReading?.primary||null,lastReading?.related||null,lastReading?.changes||[]));
+updateMethodUI();renderAll();
+</script>
+</body>
+</html>
